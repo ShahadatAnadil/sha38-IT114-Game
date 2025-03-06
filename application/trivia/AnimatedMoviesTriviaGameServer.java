@@ -46,7 +46,12 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
         currentQuestionIndex = -1;
         answersReceived = new HashMap<>();
     }
-
+    
+    /**
+     * handles incoming messages from players, such as restart commands, or answers
+     * @param playerID the id of the player who sent message
+     * @param message the message that the player sent
+     */
     @Override
     protected void messageReceived(int playerID, Object message) {
         if (message instanceof String) {
@@ -66,6 +71,11 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
         }
     }
 
+
+    /**
+     * handles new player connecting, by adding them to the game and starting the game if it has enough players
+     * @param playerID the id of the player that joined
+     */
     @Override
     protected void playerConnected(int playerID) {
         System.out.println("[sha38] Player connected: " + playerID);
@@ -79,6 +89,11 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
         }
     }
 
+
+    /**
+     * this handles player disconnecting by removing them from the game and adjust game state.
+     * @param playerID the id of the player that disconnected
+     */
     @Override
     protected void playerDisconnected(int playerID) {
         System.out.println("[sha38] Player disconnected: " + playerID);
