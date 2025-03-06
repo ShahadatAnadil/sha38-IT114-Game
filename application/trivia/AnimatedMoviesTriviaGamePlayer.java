@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.util.Scanner;
 import netgame.common.Client;
 
+//Shahadat Anadil, 3/06/2025, IT114-004, Phase 2, sha38@njit.edu
 
-//Shahadat Anadil, 2/20/2025, IT114-004, Phase 1, sha38@njit.edu
+
 /**
- * A command-line version of the MoviesTriviaGamePlayer class that connects to a
- * trivia game server and communicates using standard input/output.
- * @author [Shahadat Anadil]
+ * represents player in the animated movies trivia game
+ * handles the client-side communication with the game server
+ * 
+ * player connects to a server, sends message, and can disconnect from the game.
+ * @author Shahadat Anadil
+ * @verison 3/06/2025
+ *
  */
 public class AnimatedMoviesTriviaGamePlayer {
 
@@ -18,16 +23,21 @@ public class AnimatedMoviesTriviaGamePlayer {
     private static volatile boolean connected = false; // Tracks connection status.
     private static MoviesTriviaGameClient moviesTriviaGameClient;
 
+    /**
+     * entry point for the player client
+     * prompts user for server hostname, connects to server, and message sending.
+     * @param args optional command-lie arguments (hostname of the server)
+     */
     public static void main(String[] args) {
         String host = "";
         Scanner scanner = new Scanner(System.in);
         if (args.length == 0) {
-            System.out.print("Enter the host name of the computer hosting the trivia game: ");
+            System.out.print("[sha38] Enter the host name of the computer hosting the trivia game: ");
             host = scanner.nextLine().trim();
         } else {
             host = args[0];
         }
-
+        //host not empty check
         if (host.isEmpty()) {
             System.out.println("[sha38] Host name cannot be empty. Exiting.");
             scanner.close();
@@ -100,6 +110,7 @@ public class AnimatedMoviesTriviaGamePlayer {
          */
         @Override
         protected void messageReceived(Object message) {
+            System.out.println(message.toString()); //modified 2/27
             if (message instanceof AnimatedMoviesTriviaGameState) {
                 AnimatedMoviesTriviaGameState state = (AnimatedMoviesTriviaGameState) message;
                 if (state.senderID != 0) {
