@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import netgame.common.Hub;
-//Shahadat Anadil, 3/06/2025, IT114-004, Phase 2, sha38@njit.edu
+// shahadat anadil 3/26/2025 it114-004 phase3 sha38@njit.edu
 
 /**
  * the server for the game
@@ -12,7 +12,7 @@ import netgame.common.Hub;
  * manages the game flow, including handling player answers and starting new game
  * 
  * @author Shahadat Anadil
- * @version 3/06/2025
+ * @version 3/26/2025
  */
 public class AnimatedMoviesTriviaGameServer extends Hub {
 
@@ -24,12 +24,6 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
     private int currentQuestionIndex = -1;
     private Map<Integer, String> answersReceived; // Tracks answers from each player.
 
-
-    /**
-     * constructs a new instance of the trivia game server
-     * intializes the game state, sets up networking, and prepares the question list
-     * @throws IOException if an error occurs while starting the server
-     */
     public AnimatedMoviesTriviaGameServer() throws IOException {
         super(PORT);
         setAutoreset(true);
@@ -42,16 +36,12 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
      */
     private void initializeNewGame() {
         state.clearScores();
+        sendToAll(state);
         questions = new AnimatedMoviesTriviaQuestionsList();
         currentQuestionIndex = -1;
         answersReceived = new HashMap<>();
     }
-    
-    /**
-     * handles incoming messages from players, such as restart commands, or answers
-     * @param playerID the id of the player who sent message
-     * @param message the message that the player sent
-     */
+
     @Override
     protected void messageReceived(int playerID, Object message) {
         if (message instanceof String) {
@@ -71,11 +61,6 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
         }
     }
 
-
-    /**
-     * handles new player connecting, by adding them to the game and starting the game if it has enough players
-     * @param playerID the id of the player that joined
-     */
     @Override
     protected void playerConnected(int playerID) {
         System.out.println("[sha38] Player connected: " + playerID);
@@ -85,22 +70,19 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
             sendToAll("[sha38] Waiting for another player to join...");
         } else if (state.getPlayerCount() == 2) {
             sendToAll("[sha38] Two players connected. Starting the game!");
+            sendToAll(state);
             startGame();
         }
     }
 
-
-    /**
-     * this handles player disconnecting by removing them from the game and adjust game state.
-     * @param playerID the id of the player that disconnected
-     */
     @Override
     protected void playerDisconnected(int playerID) {
         System.out.println("[sha38] Player disconnected: " + playerID);
         state.removePlayer(playerID);
+        sendToAll(state);
 
         if (state.getPlayerCount() < 2) {
-            sendToAll("[sha38] A player disconnected. Waiting for another player to continue the game.");
+            sendToAll("[sha38] Player" + playerID + " disconnected. Waiting for another player to continue the game.");
             initializeNewGame();
         }
         // Remove disconnected player's answers.
@@ -127,7 +109,10 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
                 if (!answersReceived.containsKey(playerID)) {
                     answersReceived.put(playerID, answer);
                     System.out.println("[sha38] Player " + playerID + " answered: " + answer);
-                    sendToAll("[sha38] Player " + playerID + " answered: " + answer);
+
+                    //sendToAll("Player " + playerID + " answered: " + answer);
+                    sendToOne(playerID, "[sha38] Player " + playerID + 
+                       " has answered. Waiting for all players to answer...");
 
                     if (answersReceived.size() == state.getPlayerCount()) {
                         System.out.println("[sha38] All players have answered.");
@@ -135,6 +120,7 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
                         // All players have answered, cancel the timer and proceed.
                         evaluateAnswers();
                     }
+                    sendToAll(state);
                 }
             }
         }
@@ -189,7 +175,7 @@ public class AnimatedMoviesTriviaGameServer extends Hub {
                 sendToAll("[sha38] Player " + winner + " wins the game!");
             }
         }
-        sendToAll("[sha38]Type 'restart' to play again.");
+        //sendToAll("Type 'restart' to play again.");
     }
 
     public static void main(String[] args) {

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-//Shahadat Anadil, 3/06/2025, IT114-004, Phase 2, sha38@njit.edu
+// shahadat anadil 3/26/2025 it114-004 phase3 sha38@njit.edu
 
 /**
  * displays the game state for animated movies trivia game
