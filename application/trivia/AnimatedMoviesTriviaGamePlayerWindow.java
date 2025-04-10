@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import netgame.common.Client;
 import trivia.view.AnimatedMoviesTriviaGameMainPanel;
 
-// shahadat anadil 3/26/2025 it114-004 phase3 sha38@njit.edu
+// shahadat anadil 4/09/2025 it114-004 phase4 sha38@njit.edu
 
 /**
  * A GUI version of the MoviesTriviaGamePlayer class that connects to a
@@ -35,14 +35,14 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
             host = JOptionPane.showInputDialog(
                 null,
                 "Enter the host name of the\ncomputer hosting the movie trivia game:", 
-                "Movie Trivia Game",
+                "[sha38] Movie Trivia Game",
                 JOptionPane.QUESTION_MESSAGE);
         } else {
             host = args[0];
         }
 
         if (host.isEmpty()) {
-            System.out.println("Host name cannot be empty. Exiting.");
+            System.out.println("[sha38] Host name cannot be empty. Exiting.");
             return;
         }
         new AnimatedMoviesTriviaGamePlayerWindow(host);
@@ -63,7 +63,7 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
         } catch (InterruptedException e) {
         }
         connected = false;
-        System.out.println("Disconnected from the server. Goodbye!");
+        System.out.println("[sha38] Disconnected from the server. Goodbye!");
     }
 
     /**
@@ -93,7 +93,7 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
                 AnimatedMoviesTriviaGameState state = (AnimatedMoviesTriviaGameState) message;
                 mainPanel.updateScoreBoard(state.playerScores);
                 if (state.senderID != 0) {
-                    System.out.println("Player  " + state.senderID + ": " + state.message);
+                    System.out.println("[sha38] Player  " + state.senderID + ": " + state.message);
                 }
             } else if (message instanceof String) {
                 System.out.println(message.toString());
@@ -107,7 +107,7 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
          */
         @Override
         protected void connectionClosedByError(String message) {
-            System.out.println("Connection closed due to error: " + message);
+            System.out.println("[sha38] Connection closed due to error: " + message);
             mainPanel.setServerDisconnected();
             mainPanel.setDisable();
             connected = false;
@@ -119,7 +119,7 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
          */
         @Override
         protected void playerConnected(int newPlayerID) {
-            System.out.println("Player " + newPlayerID + " joined the game.");
+            System.out.println("[sha38] Player " + newPlayerID + " joined the game.");
         }
 
         /**
@@ -127,7 +127,7 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
          */
         @Override
         protected void playerDisconnected(int departingPlayerID) {
-            System.out.println("Player " + departingPlayerID + " left the game.");
+            System.out.println("[sha38] Player " + departingPlayerID + " left the game.");
         }
 
     }
@@ -140,7 +140,7 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
      *             running.
      */
     private AnimatedMoviesTriviaGamePlayerWindow(final String host) {
-        this.setTitle("Movies Trivia Game");
+        this.setTitle("[sha38] Movies Trivia Game");
 
         mainPanel = new AnimatedMoviesTriviaGameMainPanel(this);
         this.add(mainPanel);
@@ -163,15 +163,15 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
             // the connection is established or after an error occurs.
             public void run() {
                 try {
-                    System.out.println("Connecting to " + host + "...");
+                    System.out.println("[sha38] Connecting to " + host + "...");
                     moviesTriviaGameClient = new MoviesTriviaGameClient(host);
                     connected = true;
                     mainPanel.setEnable();
                     mainPanel.setServerConnected(moviesTriviaGameClient.getID());
 
                 } catch (IOException e) {
-                    System.out.println("Failed to connect to the server: " + e.getMessage());
-                    System.out.println("Error: " + e);
+                    System.out.println("[sha38] Failed to connect to the server: " + e.getMessage());
+                    System.out.println("[sha38] Error: " + e);
                 }
             }
         }.start();
