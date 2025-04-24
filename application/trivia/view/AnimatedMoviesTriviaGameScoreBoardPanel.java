@@ -4,27 +4,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
-// shahadat anadil 3/26/2025 it114-004 phase3 sha38@njit.edu
+import trivia.AnimatedMoviesTriviaGameState;
 
-/**
- * This class displays the scoreboard panel for the Animated Movies Trivia Game.
- * It displays players' scores using a JTable component.
- *
- * Author: Shahadat Anadil
- */
 
 public class AnimatedMoviesTriviaGameScoreBoardPanel extends JPanel {
 
@@ -33,25 +30,22 @@ public class AnimatedMoviesTriviaGameScoreBoardPanel extends JPanel {
 
   private DefaultTableModel tableModel;
   private JTable table;
+  private JLabel southLabel; // JLabel for displaying the timer
+  private Timer timer; // Timer to update the countdown
+  private int timeLeftInSeconds = AnimatedMoviesTriviaGameState.QUESTION_TIMER_SECONDS; // Starting time
+  private boolean timerStarted = false;
 
-  /**
-   * Constructs the scoreboard panel and initializes its components.
-   */
   public AnimatedMoviesTriviaGameScoreBoardPanel() {
     super();
     initialize();
   }
 
-  /**
-   * Initializes the scoreboard panel layout and JTable properties.
-   */
   private void initialize() {
-    this.setBackground(Color.BLACK);//207 , 300
+    this.setBackground(Color.BLACK);
     this.setLayout(new BorderLayout());
     this.setPreferredSize(new Dimension(207, 300));
     this.setBorder(BorderFactory.createLineBorder(DARK_GOLD, 3));
 
-    // Setup table model with columns "Player" and "Score"
     tableModel = new DefaultTableModel(new Object[] { "Player", "Score" }, 0);
     table = new JTable(tableModel);
     table.setEnabled(false);
@@ -62,6 +56,7 @@ public class AnimatedMoviesTriviaGameScoreBoardPanel extends JPanel {
     table.setSelectionBackground(Color.DARK_GRAY);
     table.setFont(new Font("Arial", Font.BOLD, 14));
 
+    // Set up table header
     JTableHeader header = table.getTableHeader();
     header.setBackground(Color.DARK_GRAY);
     header.setForeground(GOLD);
@@ -74,38 +69,85 @@ public class AnimatedMoviesTriviaGameScoreBoardPanel extends JPanel {
     columnModel.getColumn(1).setPreferredWidth(100);
     columnModel.getColumn(1).setMaxWidth(100);
 
-    this.add(table.getTableHeader(), BorderLayout.NORTH);
+    // Add table header to the NORTH region
+    this.add(header, BorderLayout.NORTH);
+
+    // Add table to the CENTER region
     this.add(table, BorderLayout.CENTER);
+
+    // Create JLabel for the SOUTH region with the same font size as the table header
+    southLabel = new JLabel("", SwingConstants.CENTER);
+    southLabel.setFont(new Font("Arial", Font.BOLD, 18));
+    southLabel.setForeground(GOLD);
+    southLabel.setBackground(Color.BLACK);
+    southLabel.setOpaque(true);
+
+    // Add the JLabel to the SOUTH region
+    this.add(southLabel, BorderLayout.SOUTH);
   }
 
-  /**
-   * Updates the scoreboard with new player scores.
-   *
-   * @param players A HashMap containing player IDs as keys and their scores as
-   *                values.
-   */
-  public void resetPlayers(HashMap<Integer, Integer> players) {
-    tableModel.setRowCount(0); // Clear existing data
-    for (var entry : players.entrySet()) {
-      tableModel.addRow(new Object[] { entry.getKey(), entry.getValue() });
+  // Method to start the countdown timer
+  public void startQuestionTimer() {
+    if(timerStarted == false) {
+      timerStarted = true;
+      timeLeftInSeconds = AnimatedMoviesTriviaGameState.QUESTION_TIMER_SECONDS;;
+      // Initialize the timer to update every second (1000 ms)
+      timer = new Timer(1000, this::updateTimer);
+      timer.start();
     }
   }
 
-  /**
-   * Main method for simulating the scoreboard panel.
-   *
-   * @param args Command line arguments (not used).
-   * @throws InterruptedException If the thread sleep is interrupted.
-   */
+  // Method to update the countdown timer
+  private void updateTimer(ActionEvent event) {
+    if (timeLeftInSeconds > 0 && timerStarted == true) {
+      timeLeftInSeconds--;
+      int minutes = timeLeftInSeconds / 60;
+      int seconds = timeLeftInSeconds % 60;
+      String time = String.format("%02d:%02d", minutes, seconds);
+      southLabel.setText(time);
+    } else {
+      // Stop the timer once it reaches 00:00
+      timerStarted = false;
+      timeLeftInSeconds = 0;
+      timer.stop();
+    }
+  }
+
+  // Method to stop the timer and clear the label
+  public void stopTimer() {
+    if (timer != null) {
+      timerStarted = false;
+      timeLeftInSeconds = 0;
+      timer.stop(); // Stop the timer
+    }
+    southLabel.setText(""); // Clear the label text
+  }
+
+  public void resetPlayers(HashMap<Integer, Integer> players) {
+    tableModel.setRowCount(0); // Clear existing data
+    if (players != null && !players.isEmpty()) {
+      for (var entry : players.entrySet()) {
+        tableModel.addRow(new Object[] { entry.getKey(), entry.getValue() });
+      }
+    }
+  }
 
   public static void main(String[] args) throws InterruptedException {
-    JFrame frame = new JFrame("[sha38] Animated Movies Trivia Game - Score Board Panel");
+    JFrame frame = new JFrame("Movies Trivia Game - Score Board Panel");
 
     AnimatedMoviesTriviaGameScoreBoardPanel panel = new AnimatedMoviesTriviaGameScoreBoardPanel();
     frame.add(panel);
     frame.pack();
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setVisible(true);
+
+    // Simulate starting the question timer after 5 seconds
+    Thread.sleep(5000);
+    panel.startQuestionTimer();
+
+    // Simulate stopping the timer after 5 more seconds
+    Thread.sleep(20000);
+    panel.stopTimer(); // Stop and clear the timer text
 
     Thread.sleep(5000);
     panel.resetPlayers(new HashMap<>(Map.of(1, 1, 2, 2, 3, 3)));

@@ -1,47 +1,54 @@
 package trivia;
 
-// shahadat anadil 3/26/2025 it114-004 phase3 sha38@njit.edu
-
-
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-/**
- * This class contains a list of movie trivia questions
- * Provides the methods to get a question and check the size of the list
- * 
- * @author Shahadat Anadil
- */
-
+import java.util.Collections;
+import java.util.LinkedList;
 
 public class AnimatedMoviesTriviaQuestionsList {
-   private ArrayList<AnimatedMoviesTriviaQuestion> questions;
-   public AnimatedMoviesTriviaQuestionsList() {
-        /**
-         * Constructors to initialize the list of movie trivia questions
-         */
-       questions = new ArrayList<>();
-       questions.add(new AnimatedMoviesTriviaQuestion("In Coco, what is the name of the musical icon Ernesto de la Cruz stole songs from?", "Hector"));
-       questions.add(new AnimatedMoviesTriviaQuestion("In The Lego Movie, what is the name of the prophecy that Emmet is believed to fulfill?", "Prophecy"));
-       questions.add(new AnimatedMoviesTriviaQuestion("In Wall-E, what is the name of the spaceship where humans live", "Axiom"));
-       questions.add(new AnimatedMoviesTriviaQuestion("In Up, what is the name of the rare bird that Kevin is?", "Snipe"));
-       questions.add(new AnimatedMoviesTriviaQuestion("In Ratatouille, what is the name of the food critic who reviews Gusteau's resturant?", "Ego"));
-       questions.add(new AnimatedMoviesTriviaQuestion("In Aladdin, what is the name of Jasmine's pet tiger", "Rajah"));
-       // Add more questions here in random order.
-   }
+    private static ArrayList<AnimatedMoviesTriviaQuestion> questions = new ArrayList<>();
+    private LinkedList<AnimatedMoviesTriviaQuestion> roundQuestions;
+    private static int QUESTIONS_PER_ROUND = 3;
+    private static final String QUESTIONS_FILENAME = "trivia/resources/AnimatedMoviesTriviaQuestions.csv";
 
-   /**
-    * retrieves a trivia questions, this is based on the provided index
+    public AnimatedMoviesTriviaQuestionsList() {
+        // Initialize the questions list only if it is empty
+        if (questions.isEmpty()) {
+            try (
+               InputStream inputStream = getClass().getClassLoader().getResourceAsStream(QUESTIONS_FILENAME);
+               BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))
+           ) {
+               String line;
+               while ((line = reader.readLine()) != null) {
+                   String[] parts = line.split(",", 2);
+                   if (parts.length == 2) {
+                       questions.add(new AnimatedMoviesTriviaQuestion(parts[0].trim(), parts[1].trim()));
+                   }
+               }
+           } catch (Exception e) {
+               e.printStackTrace(); // Log error if file not found or reading fails
+           }
 
-    * @param currentQuestionIndex the index of the question it's going to get
-    * @return it'll return the trivia question at the given index
-    */
-   public AnimatedMoviesTriviaQuestion get(int currentQuestionIndex) {
-       return questions.get(currentQuestionIndex);
-   }
-   /**
-    * returns the # of questions
-    * @return the # of questions in this list
-    */
-   public int size() {
-       return questions.size();
-   }
+        }
+        
+        // Shuffle the questions list again for each new round
+        Collections.shuffle(questions);
+        // Create a LinkedList to hold random questions for one round
+        roundQuestions = new LinkedList<>();        
+        // Add random questions to the roundQuestions list
+        for (int i = 0; i < QUESTIONS_PER_ROUND; i++) {
+            roundQuestions.add(questions.get(i));
+        }
+    }
+
+    public AnimatedMoviesTriviaQuestion get(int currentQuestionIndex) {
+        return roundQuestions.get(currentQuestionIndex);
+    }
+
+    public int size() {
+        // Return the size of the roundQuestions LinkedList
+        return roundQuestions.size();
+    }
 }

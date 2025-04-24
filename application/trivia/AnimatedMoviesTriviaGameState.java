@@ -20,6 +20,8 @@ public class AnimatedMoviesTriviaGameState implements Serializable {
     // a map that sores player scores, the key is the player ID and the value is
     // their score
     public HashMap<Integer, Integer> playerScores = new HashMap<>();
+    public static int QUESTION_TIMER_SECONDS = 15;
+    private boolean questionTimer;
 
     /**
      * constructs an instance of the game state, initializig player scores
@@ -113,4 +115,13 @@ public class AnimatedMoviesTriviaGameState implements Serializable {
             entry.setValue(0);
         }
     }
+
+
+    public boolean isQuestionTimer() {
+        return questionTimer;
+    }
+    public void setQuestionTimer(boolean questionTimer) {
+        this.questionTimer = questionTimer;
+    }
+ 
 }

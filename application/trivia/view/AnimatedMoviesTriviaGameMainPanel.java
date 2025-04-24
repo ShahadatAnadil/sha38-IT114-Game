@@ -201,6 +201,14 @@ public class AnimatedMoviesTriviaGameMainPanel extends JPanel {
     scoreBoardPanel.resetPlayers(playerScores);
   }
 
+  public void updateQuestionTimer(boolean questionTimer) {
+    if(questionTimer)
+      scoreBoardPanel.startQuestionTimer();
+    else
+      scoreBoardPanel.stopTimer();
+  }
+ 
+
   public static void main(String[] args) throws InterruptedException {
     JFrame frame = new JFrame("[sha38] Animated Movies Trivia Game - Main Panel");
 

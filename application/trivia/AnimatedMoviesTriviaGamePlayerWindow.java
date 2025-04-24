@@ -18,7 +18,7 @@ import trivia.view.AnimatedMoviesTriviaGameMainPanel;
  */
 public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
 
-    private static final int PORT = 37829; // Port number for the server.
+    private static final int PORT = 39761; // Port number for the server.
 
     private static volatile boolean connected = false; // Tracks connection status.
 
@@ -91,13 +91,22 @@ public class AnimatedMoviesTriviaGamePlayerWindow extends JFrame {
         protected void messageReceived(Object message) {
             if (message instanceof AnimatedMoviesTriviaGameState) {
                 AnimatedMoviesTriviaGameState state = (AnimatedMoviesTriviaGameState) message;
+                System.out.println("Timer On? " + state.isQuestionTimer());
                 mainPanel.updateScoreBoard(state.playerScores);
+                mainPanel.updateQuestionTimer(state.isQuestionTimer());
                 if (state.senderID != 0) {
                     System.out.println("[sha38] Player  " + state.senderID + ": " + state.message);
                 }
             } else if (message instanceof String) {
                 System.out.println(message.toString());
                 mainPanel.setMessage(message.toString());
+                if(message.toString().contains("Time's up") ||
+                    message.toString().contains("All players have answered") ||
+                    message.toString().contains("A new game is starting!")) {
+                    System.out.println("Timer Off");
+                    mainPanel.updateQuestionTimer(false);
+                }
+
             }
         }
 
