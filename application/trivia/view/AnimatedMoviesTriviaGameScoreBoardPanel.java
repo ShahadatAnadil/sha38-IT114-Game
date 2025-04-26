@@ -22,7 +22,7 @@ import javax.swing.table.TableColumnModel;
 
 import trivia.AnimatedMoviesTriviaGameState;
 
-
+// shahadat anadil 4/21/2025 it114-004 phase5 sha38@njit.edu
 public class AnimatedMoviesTriviaGameScoreBoardPanel extends JPanel {
 
   private static final Color GOLD = Color.decode("#f1dfa9");
